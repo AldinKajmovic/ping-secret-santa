@@ -1,0 +1,6 @@
+sqlalchemy
+fastapi
+uvicorn[standard]
+fastapi[standard]
+python-dotenv
+passlib[argon2]
