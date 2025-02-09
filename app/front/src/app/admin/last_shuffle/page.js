@@ -41,7 +41,16 @@ function GeneratePairs() {
                     <Grid item xs={12} sm={6} md={4} key={index}>
                         <Card sx={{ backgroundColor: "#2A5298" }}>
                             <CardContent sx={{ textAlign: "center", color: "#fff", padding: "20px", borderRadius: "8px" }}>
-                                <>
+                                {pair.second_pair_member_username == "NONE" ? <>
+                                    <Typography variant="h6">Unpaired</Typography>
+                                    <Typography variant="body1">
+                                        {`username: ${pair.first_pair_member_username}`}
+                                        <br />
+                                        <span>&</span>
+                                        <br />
+                                        {`username: ${pair.second_pair_member_username}`}
+                                    </Typography>
+                                </> :<>
                                     <Typography variant="h6">{`Pair ${index + 1}:`}</Typography>
                                     <Typography variant="body1">
                                         {`username: ${pair.first_pair_member_username}`}
@@ -50,7 +59,8 @@ function GeneratePairs() {
                                         <br />
                                         {`username: ${pair.second_pair_member_username}`}
                                     </Typography>
-                                </>
+                                </> }
+                                
                             </CardContent>
                         </Card>
                     </Grid>

@@ -46,14 +46,20 @@ function GeneratePairs() {
             for (let i = 0; i < userList.length; i++) {
                 let first_person = userList[i].username;
                 let second_person = shuffledList[i].username;
-
-                if (first_person === second_person || usedPartners.has(second_person) ) {
+                if (i == userList.length - 1 && first_person === second_person) {
+                    newPairList.push([
+                        { first_pair_member_username: first_person }, { second_pair_member_username: "NONE" },
+                    ]);
+                    isValid = true;
+                    break;
+                }
+                if (first_person === second_person || usedPartners.has(second_person)) {
                     isValid = false;
                     break;
                 } else {
                     usedPartners.add(second_person);
                     newPairList.push([
-                        {username: first_person},{username: second_person},
+                        { first_pair_member_username: first_person }, { second_pair_member_username: second_person },
                     ]);
                 }
             }
@@ -64,22 +70,23 @@ function GeneratePairs() {
 
     }, [userList]);
 
-    
+
     useEffect(() => {
         if (userList.length !== 0 && pairList.length > 0) {
             const sendData = async () => {
                 try {
                     const shuffleId = uuidv4();
                     await axios.post(`http://localhost:8000/create_shuffle/${shuffleId}`);
+
                     let santaPairList = [];
                     pairList.map((pair) => {
-                            const firstUsername = pair[0].username;
-                            const secondUsername = pair[1].username;
-                            santaPairList.push({first_username : firstUsername, second_username: secondUsername});
+                        const firstUsername = pair[0].first_pair_member_username;
+                        const secondUsername = pair[1].second_pair_member_username;
+                        santaPairList.push({ first_username: firstUsername, second_username: secondUsername });
                     });
 
                     const obj = { shuffleID: shuffleId, santaList: santaPairList };
-                     await axios.post("http://localhost:8000/add_shuffle_users", obj);
+                    await axios.post("http://localhost:8000/add_shuffle_users", obj);
 
                 } catch (error) {
                     console.error("Error in requests:", error);
@@ -108,16 +115,25 @@ function GeneratePairs() {
                     <Grid item xs={12} sm={6} md={4} key={index}>
                         <Card sx={{ backgroundColor: pair.length === 2 ? "#2A5298" : "#1E3C72" }}>
                             <CardContent sx={{ textAlign: "center", color: "#fff", padding: "20px", borderRadius: "8px" }}>
-                                <>
-                                    <Typography variant="h6">{`Pair ${index + 1}:`}</Typography>
+                                {pair[1].second_pair_member_username == "NONE" ? <>
+                                    <Typography variant="h6">Unpaired</Typography>
                                     <Typography variant="body1">
-                                        {`username: ${pair[0].username}`}
+                                        {`username: ${pair[0].first_pair_member_username}`}
                                         <br />
                                         <span>&</span>
                                         <br />
-                                        {`username: ${pair[1].username}`}
+                                        {`username: ${pair[1].second_pair_member_username}`}
                                     </Typography>
-                                </>
+                                </> : <>
+                                    <Typography variant="h6">{`Pair ${index + 1}:`}</Typography>
+                                    <Typography variant="body1">
+                                        {`username: ${pair[0].first_pair_member_username}`}
+                                        <br />
+                                        <span>&</span>
+                                        <br />
+                                        {`username: ${pair[1].second_pair_member_username}`}
+                                    </Typography>
+                                </>}
                             </CardContent>
                         </Card>
                     </Grid>
